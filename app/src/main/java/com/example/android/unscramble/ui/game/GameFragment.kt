@@ -30,9 +30,9 @@ import com.example.android.unscramble.databinding.GameFragmentBinding
  * Fragment where the game is played, contains the game logic.
  */
 class GameFragment : Fragment() {
+    // At the top of the GameFragment class, add a property of type GameViewModel
+    // Initialize the GameViewModel using the by viewModels() Kotlin PROPERTY DELEGATE.
     private val viewModel: GameViewModel by viewModels()
-
-
 
 
     // Binding object instance with access to the views in the game_fragment.xml layout
@@ -48,6 +48,8 @@ class GameFragment : Fragment() {
     ): View {
         // Inflate the layout XML file and return a binding object instance
         binding = GameFragmentBinding.inflate(inflater, container, false)
+        // In GameFragment inside onCreateView(), after you get a reference to the binding object,
+        // add a log statement to log the creation of the fragment.
         Log.d("GameFragment", "GameFragment created or recreated!")
         return binding.root
     }
@@ -122,10 +124,14 @@ class GameFragment : Fragment() {
     /*
      * Displays the next scrambled word on screen.
      */
+    // GameFragment, update the method updateNextWordOnScreen() to use the read-only viewModel
+    // property, currentScrambledWord
     private fun updateNextWordOnScreen() {
         binding.textViewUnscrambledWord.text = viewModel.currentScrambledWord
     }
 
+    // In GameFragment, override the onDetach() callback method, which will be called when the
+    // corresponding activity and fragment are destroyed.
     override fun onDetach(){
         super.onDetach()
         Log.d("GameFragment", "GameFragment destroyed!")

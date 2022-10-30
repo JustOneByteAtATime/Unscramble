@@ -59,6 +59,10 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
     // LiveData
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
+    //To use the ViewModel in your app, verify that you have the ViewModel
+    // library dependency inside the dependencies block. This step is already
+    // done for you. Depending on the latest version of the library,
+    // the library version number in the generated code might be different
     // ViewModel
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     implementation 'androidx.fragment:fragment-ktx:1.3.6'
