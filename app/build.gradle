@@ -17,6 +17,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    //  To use data binding in any Kotlin project, you should apply the kotlin-kapt plugin.
     id 'kotlin-kapt'
 }
 
@@ -46,8 +47,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    // In the build.gradle(Module) file, enable the dataBinding property under the
+    // buildFeatures section.  Change "viewBinding true" to "dataBinding true" note equals not needed
     buildFeatures {
-        viewBinding true
+        dataBinding true
     }
 }
 

@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContentProviderCompat
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.android.unscramble.R
@@ -50,7 +51,10 @@ class GameFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         // Inflate the layout XML file and return a binding object instance
-        binding = GameFragmentBinding.inflate(inflater, container, false)
+
+        // In GameFragment, at the beginning of the onCreateView() method, change the instantiation
+        // of the binding variable to use data binding.
+        binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
         // In GameFragment inside onCreateView(), after you get a reference to the binding object,
         // add a log statement to log the creation of the fragment.
         Log.d("GameFragment", "GameFragment created or recreated!")
