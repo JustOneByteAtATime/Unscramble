@@ -69,6 +69,19 @@ class GameFragment : Fragment() {
     {
         super.onViewCreated(view, savedInstanceState)
 
+        // In GameFragment at the beginning of the onViewCreated()method, initialize the layout
+        // variables gameViewModel and maxNoOfWords.
+        binding.gameViewModel = viewModel
+        binding.maxNoOfWords = MAX_NO_OF_WORDS
+        // The LiveData is lifecycle-aware observable, so you have to pass the lifecycle owner to
+        // the layout. In the GameFragment, inside the onViewCreated()method, below the
+        // initialization of the binding variables, add the following code.
+
+        // Specify the fragment view as the lifecycle owner of the binding.
+        // This is used so that the binding can observe LiveData updates
+        binding.lifecycleOwner = viewLifecycleOwner
+
+
         // Setup a click listener for the Submit and Skip buttons.
         binding.submit.setOnClickListener { onSubmitWord() }
         binding.skip.setOnClickListener { onSkipWord() }
@@ -77,29 +90,40 @@ class GameFragment : Fragment() {
         // binding.score.text = getString(R.string.score, 0)
         // binding.wordCount.text = getString(
         //        R.string.word_count, 0, MAX_NO_OF_WORDS)
-        viewModel.currentScrambledWord.observe(viewLifecycleOwner,
-            { newWord ->
-                binding.textViewUnscrambledWord.text = newWord
-            })
+
+        // In GameFragment, remove the LiveData observer code for currentScrambledWord: You don't
+        // need the observer code in fragment any more. The layout receives the updates of the
+        // changes to the LiveData directly.
+
+        // viewModel.currentScrambledWord.observe(viewLifecycleOwner,
+        //    { newWord ->
+        //        binding.textViewUnscrambledWord.text = newWord
+        //    })
+
     // In the GameFragment at the end of onViewCreated() method, attach observer for score. Pass
     // in the viewLifecycleOwner as the first parameter to the observer and a lambda expression for
     // the second parameter. Inside the lambda expression, pass the new score as a parameter and
     // inside the function body, set the new score to the text view.
-        viewModel.score.observe(viewLifecycleOwner,
-            { newScore ->
-                binding.score.text = getString(R.string.score, newScore)
-            })
+
+        // Remove LiveData observers from the GameFragment. You don't need them any longer, binding
+        // expressions update the UI when the corresponding LiveData changes.
+
+        // viewModel.score.observe(viewLifecycleOwner,
+        //    { newScore ->
+        //        binding.score.text = getString(R.string.score, newScore)
+        //    })
 
         // At the end of the onViewCreated() method, attach an observer for the currentWordCount
         // LiveData. Pass in the viewLifecycleOwner as the first parameter to the observer and a
         // lambda expression for the second parameter. Inside the lambda expression, pass the new
         // word count as a parameter and in the function body, set the new word count along with
         // the MAX_NO_OF_WORDS to the text view.
-        viewModel.currentWordCount.observe(viewLifecycleOwner,
-            { newWordCount ->
-                binding.wordCount.text =
-                    getString(R.string.word_count, newWordCount, MAX_NO_OF_WORDS)
-            })
+
+        // viewModel.currentWordCount.observe(viewLifecycleOwner,
+        //    { newWordCount ->
+        //        binding.wordCount.text =
+        //            getString(R.string.word_count, newWordCount, MAX_NO_OF_WORDS)
+        //    })
 
     }
 
@@ -153,11 +177,12 @@ class GameFragment : Fragment() {
     /*
      * Gets a random word for the list of words and shuffles the letters in it.
      */
-    private fun getNextScrambledWord(): String {
-        val tempWord = allWordsList.random().toCharArray()
-        tempWord.shuffle()
-        return String(tempWord)
-    }
+    // Cleanup - getNextScrambledWord() not used so this is commented out
+    //private fun getNextScrambledWord(): String {
+    //    val tempWord = allWordsList.random().toCharArray()
+    //    tempWord.shuffle()
+    //    return String(tempWord)
+    // }
 
     // In GameFragment, add a private function called showFinalScoreDialog(). To create a
     // MaterialAlertDialog, use the MaterialAlertDialogBuilder class to build up parts of the

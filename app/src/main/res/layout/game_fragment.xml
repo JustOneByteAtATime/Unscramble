@@ -24,8 +24,23 @@ element (ScrollView), select Show Context Actions > Convert to data binding layo
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- In game_fragment.xml, inside the <data> tag add a child tag called <variable>, declare a
+    property called gameViewModel and of the type GameViewModel. You will use this to bind the
+    data in ViewModel to the layout.
+    -->
     <data>
-
+        <variable
+            name="gameViewModel"
+            type="com.example.android.unscramble.ui.game.GameViewModel"
+            />
+        <!-- Below the gameViewModel declaration, add another variable inside the <data> tag of
+        type Integer, and name it maxNoOfWords. You will use this to bind to the variable in
+        ViewModel to store the number of words per game
+        -->
+        <variable
+            name="maxNoOfWords"
+            type="int"
+            />
     </data>
 
     <ScrollView
@@ -71,6 +86,10 @@ element (ScrollView), select Show Context Actions > Convert to data binding layo
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView_unscrambled_word" />
 
+            <!-- In game_fragment.xml, add a text attribute to the textView_unscrambled_word text
+            view. Use the new layout variable, gameViewModel and assign
+            @{gameViewModel.currentScrambledWord} to the text attribute.
+            -->
             <TextView
                 android:id="@+id/textView_unscrambled_word"
                 android:layout_width="wrap_content"
@@ -82,24 +101,35 @@ element (ScrollView), select Show Context Actions > Convert to data binding layo
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/word_count"
-                tools:text="Scramble word" />
+                tools:text="Scramble Word"
+                android:text="@{gameViewModel.currentScrambledWord}"
+                />
 
+            <!-- In game_fragment.xml, update the text attribute for word_count text view with the
+            following binding expression. Use word_count string resource and pass in
+            gameViewModel.currentWordCount, and maxNoOfWords as resource parameters.
+            -->
             <TextView
                 android:id="@+id/word_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/word_count"
+                android:text="@{@string/word_count(gameViewModel.currentWordCount, maxNoOfWords)}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 app:layout_constraintBottom_toTopOf="@+id/textView_unscrambled_word"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="3 of 10 words" />
+                tools:text="3 of 10 words"
+                />
 
+            <!-- Update the text attribute for score text view with the following binding
+            expression. Use score string resource and pass in gameViewModel.score as a resource
+            parameter.
+            -->
             <TextView
                 android:id="@+id/score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/score"
+                android:text="@{@string/score(gameViewModel.score)}"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 app:layout_constraintEnd_toEndOf="parent"
