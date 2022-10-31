@@ -54,20 +54,49 @@ class GameFragment : Fragment() {
         // In GameFragment inside onCreateView(), after you get a reference to the binding object,
         // add a log statement to log the creation of the fragment.
         Log.d("GameFragment", "GameFragment created or recreated!")
+        // In GameFragment inside onCreateView(), above the return statement add another
+        // log to print the app data, word, score, and word count.
+        Log.d("GameFragment", "Word: ${viewModel.currentScrambledWord} " +
+                "Score: ${viewModel.score} WordCount: ${viewModel.currentWordCount}")
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
         super.onViewCreated(view, savedInstanceState)
 
         // Setup a click listener for the Submit and Skip buttons.
         binding.submit.setOnClickListener { onSubmitWord() }
         binding.skip.setOnClickListener { onSkipWord() }
         // Update the UI
-        updateNextWordOnScreen()
-        binding.score.text = getString(R.string.score, 0)
-        binding.wordCount.text = getString(
-                R.string.word_count, 0, MAX_NO_OF_WORDS)
+        // updateNextWordOnScreen()
+        // binding.score.text = getString(R.string.score, 0)
+        // binding.wordCount.text = getString(
+        //        R.string.word_count, 0, MAX_NO_OF_WORDS)
+        viewModel.currentScrambledWord.observe(viewLifecycleOwner,
+            { newWord ->
+                binding.textViewUnscrambledWord.text = newWord
+            })
+    // In the GameFragment at the end of onViewCreated() method, attach observer for score. Pass
+    // in the viewLifecycleOwner as the first parameter to the observer and a lambda expression for
+    // the second parameter. Inside the lambda expression, pass the new score as a parameter and
+    // inside the function body, set the new score to the text view.
+        viewModel.score.observe(viewLifecycleOwner,
+            { newScore ->
+                binding.score.text = getString(R.string.score, newScore)
+            })
+
+        // At the end of the onViewCreated() method, attach an observer for the currentWordCount
+        // LiveData. Pass in the viewLifecycleOwner as the first parameter to the observer and a
+        // lambda expression for the second parameter. Inside the lambda expression, pass the new
+        // word count as a parameter and in the function body, set the new word count along with
+        // the MAX_NO_OF_WORDS to the text view.
+        viewModel.currentWordCount.observe(viewLifecycleOwner,
+            { newWordCount ->
+                binding.wordCount.text =
+                    getString(R.string.word_count, newWordCount, MAX_NO_OF_WORDS)
+            })
+
     }
 
     /*
@@ -89,26 +118,32 @@ class GameFragment : Fragment() {
         if(viewModel.isUserWordCorrect(playerWord)) {
             // Inside the if block, reset the text field, call setErrorTextField passing in false.
             setErrorTextField(false)
-            // Move the existing code inside the if block.
-            if (viewModel.nextWord()) {
-                updateNextWordOnScreen()
-            } else
-            {
+            if (!viewModel.nextWord()) {
                 showFinalScoreDialog()
             }
-        } else
-        {
+        } else {
             setErrorTextField(true)
         }
-
     }
+
 
     /*
      * Skips the current word without changing the score.
      * Increases the word count.
      */
-    private fun onSkipWord() {
-
+    // Similar to onSubmitWord(), add a condition in the onSkipWord() method. If true,
+    // display the word on screen and reset the text field. If false and there's no more
+    // words left in this round, show the alert dialog with the final score.
+    private fun onSkipWord()
+    {
+        if(viewModel.nextWord())
+        {
+            setErrorTextField(false)
+            // updateNextWordOnScreen()
+        } else
+        {
+            showFinalScoreDialog()
+        }
     }
 
     /*
@@ -133,7 +168,10 @@ class GameFragment : Fragment() {
             .setTitle(getString(R.string.congratulations))
             // Set the message to show the final score, use the read-only version of the
             // score variable (viewModel.score), you added earlier.
-            .setMessage(getString(R.string.you_scored, viewModel.score))
+
+            // In GameFragment, access the value of score using the value property. Inside the
+            // showFinalScoreDialog() method, change viewModel.score to viewModel.score.value.
+            .setMessage(getString(R.string.you_scored, viewModel.score.value))
             // Make your alert dialog not cancelable when the back key is pressed, using
             // setCancelable() method and passing false.
             .setCancelable(false)
@@ -156,8 +194,9 @@ class GameFragment : Fragment() {
      * restart the game.
      */
     private fun restartGame() {
+        viewModel.reinitializeData()
         setErrorTextField(false)
-        updateNextWordOnScreen()
+        // updateNextWordOnScreen()
     }
 
     /*
@@ -185,9 +224,12 @@ class GameFragment : Fragment() {
      */
     // GameFragment, update the method updateNextWordOnScreen() to use the read-only viewModel
     // property, currentScrambledWord
-    private fun updateNextWordOnScreen() {
-        binding.textViewUnscrambledWord.text = viewModel.currentScrambledWord
-    }
+
+    // In GameFragment, delete the method updateNextWordOnScreen() and all the calls to it.
+    // You do not require this method, as you will be attaching an observer to the LiveData.
+    // private fun updateNextWordOnScreen() {
+    //     binding.textViewUnscrambledWord.text = viewModel.currentScrambledWord
+    // }
 
     // In GameFragment, override the onDetach() callback method, which will be called when the
     // corresponding activity and fragment are destroyed.
