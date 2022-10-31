@@ -1,13 +1,19 @@
 package com.example.android.unscramble.ui.game
 
 import android.util.Log
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModel
+import com.example.android.unscramble.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 // Change GameViewModel to be subclassed from ViewModel.
 // ViewModel is an abstract class, so you need to extend it to use it in your app.
 class GameViewModel : ViewModel()
 {
     // Move the data variables score, currentWordCount, currentScrambledWord to GameViewModel class.
+
+    // First add a backing property to the score variable. In GameViewModel, change the score
+    // variable declaration so it utilizes the backing property
     private var _score = 0
     val score: Int
         get() = _score
@@ -85,6 +91,27 @@ class GameViewModel : ViewModel()
 
     }
 
+    // In GameViewModel, add a new private method called increaseScore() with no parameters and
+    // no return value. Increase the score variable by SCORE_INCREASE.
+    private fun increaseScore()
+    {
+        _score += SCORE_INCREASE
+    }
+
+    // In GameViewModel, add a helper method called isUserWordCorrect() which returns a Boolean
+    // and takes a String, the player's word, as a parameter.
+    fun isUserWordCorrect(playerWord: String): Boolean
+    {
+        // In isUserWordCorrect() validate the player's word and increase the score if the guess
+        // is correct. This will update the final score in your alert dialog
+        if(playerWord.equals(currentWord, true))
+        {
+            increaseScore()
+            return true
+        }
+        return false
+    }
+
 // In the GameViewModel class, add another method called nextWord(). Get the next word from
 // the list and return true if the word count is less than the MAX_NO_OF_WORDS.
     fun nextWord(): Boolean
@@ -95,4 +122,7 @@ class GameViewModel : ViewModel()
             true
         } else false
     }
+
+
+
 }

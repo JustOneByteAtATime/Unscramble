@@ -21,10 +21,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContentProviderCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.android.unscramble.R
 import com.example.android.unscramble.databinding.GameFragmentBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
  * Fragment where the game is played, contains the game logic.
@@ -71,7 +74,32 @@ class GameFragment : Fragment() {
     * Checks the user's word, and updates the score accordingly.
     * Displays the next scrambled word.
     */
-    private fun onSubmitWord() {
+    // Add a check on the return value of viewModel.nextWord() method. If true, another word
+    // is available, so update the scrambled word on screen using updateNextWordOnScreen().
+    // Otherwise the game is over, so display the alert dialog with the final score.
+    private fun onSubmitWord()
+    {
+        // In GameFragment, at the beginning of onSubmitWord(), create a val called playerWord.
+        // Store the player's word in it, by extracting it from the text field in the
+        // binding variable.
+        val playerWord = binding.textInputEditText.text.toString()
+        // In onSubmitWord(), below the declaration of playerWord, validate the player's word.
+        // Add an if statement to check the player's word using the isUserWordCorrect()
+        // method, passing in the playerWord.
+        if(viewModel.isUserWordCorrect(playerWord)) {
+            // Inside the if block, reset the text field, call setErrorTextField passing in false.
+            setErrorTextField(false)
+            // Move the existing code inside the if block.
+            if (viewModel.nextWord()) {
+                updateNextWordOnScreen()
+            } else
+            {
+                showFinalScoreDialog()
+            }
+        } else
+        {
+            setErrorTextField(true)
+        }
 
     }
 
@@ -90,6 +118,37 @@ class GameFragment : Fragment() {
         val tempWord = allWordsList.random().toCharArray()
         tempWord.shuffle()
         return String(tempWord)
+    }
+
+    // In GameFragment, add a private function called showFinalScoreDialog(). To create a
+    // MaterialAlertDialog, use the MaterialAlertDialogBuilder class to build up parts of the
+    // dialog step-by-step. Call the MaterialAlertDialogBuilder constructor passing in the content
+    // using the fragment's requireContext() method. The requireContext() method returns a
+    // non-null Context.
+    private fun showFinalScoreDialog()
+    {
+        MaterialAlertDialogBuilder(requireContext())
+            // Add the code to set the title on the alert dialog, use a string
+            // resource from strings.xml.
+            .setTitle(getString(R.string.congratulations))
+            // Set the message to show the final score, use the read-only version of the
+            // score variable (viewModel.score), you added earlier.
+            .setMessage(getString(R.string.you_scored, viewModel.score))
+            // Make your alert dialog not cancelable when the back key is pressed, using
+            // setCancelable() method and passing false.
+            .setCancelable(false)
+            // Add two text buttons EXIT and PLAY AGAIN using the methods setNegativeButton()
+            // and setPositiveButton(). Call exitGame() and restartGame() respectively
+            // from the lambdas.
+            .setNegativeButton(getString(R.string.exit)) { _, _ ->
+                exitGame()
+            }
+            .setPositiveButton(getString(R.string.play_again))
+            {
+                    _, _ ->
+                restartGame()
+            }
+            .show()
     }
 
     /*
